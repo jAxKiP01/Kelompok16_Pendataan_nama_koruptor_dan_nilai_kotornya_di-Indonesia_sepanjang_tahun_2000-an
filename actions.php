@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $harga = $_POST['harga'];
             $id_penjual = $_POST['id_penjual'] ?: null;
 
-            $stmt = $conn->prepare("CALL sp_tambah_buku(?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("CALL tambah_buku(?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssiidi", $judul, $penulis, $penerbit, $tahun, $stok, $harga, $id_penjual);
             
             if ($stmt->execute()) {
