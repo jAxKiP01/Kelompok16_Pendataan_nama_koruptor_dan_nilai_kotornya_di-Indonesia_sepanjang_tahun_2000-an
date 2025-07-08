@@ -7,29 +7,32 @@ include 'includes/header.php';
 
 // Query untuk Agregat (COUNT, SUM, MAX, MIN)
 // 1. Jumlah Judul Buku
-$result_total_buku = $conn->query("SELECT COUNT(id_buku) AS total_buku FROM buku");
+$result_total_buku = $conn->query("SELECT * FROM v_countbuku");
 $total_buku = $result_total_buku->fetch_assoc()['total_buku'];
 
 // 2. Jumlah Total Stok Semua Buku
-$result_total_stok = $conn->query("SELECT SUM(stok) AS total_stok FROM buku");
+$result_total_stok = $conn->query("SELECT * FROM v_sumStok");
 $total_stok = $result_total_stok->fetch_assoc()['total_stok'];
 
 // 3. Jumlah Penjual
-$result_total_penjual = $conn->query("SELECT COUNT(id_penjual) AS total_penjual FROM penjual");
+$result_total_penjual = $conn->query("SELECT * FROM v_countpenjual;");
 $total_penjual = $result_total_penjual->fetch_assoc()['total_penjual'];
 
 // 4. Nilai Aset Buku (SUM dari harga * stok)
-$result_nilai_aset = $conn->query("SELECT SUM(harga * stok) AS nilai_aset FROM buku");
+$result_nilai_aset = $conn->query("SELECT * FROM v_sumaset");
 $nilai_aset = $result_nilai_aset->fetch_assoc()['nilai_aset'];
 
 // 5. Buku Termahal (MAX)
-$result_buku_mahal = $conn->query("SELECT judul, harga FROM buku ORDER BY harga DESC LIMIT 1");
+$result_buku_mahal = $conn->query("SELECT * FROM v_maxharga");
 $buku_mahal = $result_buku_mahal->fetch_assoc();
 
 // 6. Buku Termurah (MIN)
-$result_buku_murah = $conn->query("SELECT judul, harga FROM buku ORDER BY harga ASC LIMIT 1");
+$result_buku_murah = $conn->query("SELECT * FROM v_minharga");
 $buku_murah = $result_buku_murah->fetch_assoc();
 
+// 7. Rata-rata harga buku satuan (AVG)
+$result_rata_harga = $conn->query("SELECT * FROM v_avgharga");
+$rata_harga = $result_rata_harga->fetch_assoc()['rata_harga']
 ?>
 
 <h1 class="mb-4">Dashboard</h1>
@@ -85,7 +88,7 @@ $buku_murah = $result_buku_murah->fetch_assoc();
             </div>
         </div>
     </div>
-
+    
     <!-- Card Nilai Aset -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
@@ -103,6 +106,23 @@ $buku_murah = $result_buku_murah->fetch_assoc();
         </div>
     </div>
 </div>
+
+<!--Card Rata2 harga-->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Rata-rata Harga Buku</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Rp <?php echo number_format($rata_harga, 2, ',', '.'); ?></div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-person-vcard card-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <div class="row mt-4">
     <div class="col-md-6">
