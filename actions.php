@@ -85,6 +85,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             break;
 
+        case 'edit_penjual':
+            $id_penjual = $_POST['id_penjual'];
+            $penjual = $_POST['nama_penjual'];
+            $alamat = $_POST['alamat'];
+            $telepon = $_POST['telepon'];
+
+            $stmt = $conn->prepare("UPDATE penjual SET nama_penjual=?, alamat=?, telepon=? WHERE id_penjual=?");
+            $stmt->bind_param("sssi", $penjual, $alamat, $telepon, $id_penjual);
+
+            if ($stmt->execute()) {
+                header("Location: penjual.php?status=sukses_edit");
+            } else {
+                header("Location: penjual.php?status=gagal");
+            }
+            $stmt->close();
+            break;    
         // =======================================================
         // AKSI UNTUK TRANSAKSI (untuk demo trigger)
         // =======================================================
