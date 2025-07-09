@@ -100,7 +100,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 header("Location: penjual.php?status=gagal");
             }
             $stmt->close();
-            break;    
+            break;
+
+        case 'hapus_penjual':
+            $id_penjual = $_POST['id_penjual'];
+            $stmt = $conn->prepare("DELETE FROM penjual WHERE id_penjual = ?");
+            $stmt->bind_param("i", $id_penjual);
+
+            if ($stmt->execute()) {
+                header("Location: penjual.php?status=sukses_hapus");
+            } else {
+                header("Location: penjual.php?status=gagal");
+            }
+            $stmt->close();
+            break;
+                
         // =======================================================
         // AKSI UNTUK TRANSAKSI (untuk demo trigger)
         // =======================================================
