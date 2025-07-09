@@ -71,11 +71,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // AKSI UNTUK PENJUAL (Anda bisa membuat file penjual.php)
         // =======================================================
         case 'tambah_penjual':
-            // Logika tambah penjual
-            // ... (mirip dengan tambah buku)
-            header("Location: penjual.php?status=sukses_tambah");
+            $penjual = $_POST['nama_penjual'];
+            $alamat = $_POST['alamat'];
+            $telepon = $_POST['telepon'];
+
+            $stmt = $conn->prepare("CALL tambah_penjual(?, ?, ?)");
+            $stmt->bind_param("sss", $penjual, $alamat, $telepon);
+            
+            if ($stmt->execute()) {
+                header("Location: penjual.php?status=sukses_tambah");
+            } else {
+                header("Location: penjual.php?status=gagal");
+            }
             break;
-        
+
         // =======================================================
         // AKSI UNTUK TRANSAKSI (untuk demo trigger)
         // =======================================================
