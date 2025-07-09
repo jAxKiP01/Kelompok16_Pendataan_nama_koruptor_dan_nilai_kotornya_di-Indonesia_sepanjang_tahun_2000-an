@@ -1,15 +1,40 @@
 <?php
-// File: buku.php
-require_once 'config/database.php';
+require_once 'config/database.php'; // $conn harus didefinisikan pertama
 
 $page_title = "Manajemen Buku";
 include 'includes/header.php';
 
-// Ambil data penjual untuk dropdown
+// Proses pencarian buku
+$keyword = $_GET['keyword'] ?? '';
+$sql = "SELECT * FROM buku";
+$params = [];
+
+if (!empty($keyword)) {
+    $sql .= " WHERE judul LIKE ?";
+    $params[] = "%$keyword%";
+}
+
+$stmt = $conn->prepare($sql);
+if (!empty($params)) {
+    $stmt->bind_param("s", $params[0]);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Ambil data penjual
 $penjual_result = $conn->query("SELECT id_penjual, nama_penjual FROM penjual ORDER BY nama_penjual");
 
-// Ambil data buku dari VIEW v_buku_lengkap
-$buku_result = $conn->query("SELECT * FROM v_buku_lengkap ORDER BY judul ASC");
+// Ambil semua buku (untuk tabel utama)
+$keyword = $_GET['keyword'] ?? '';
+if (!empty($keyword)) {
+    $buku_stmt = $conn->prepare("SELECT * FROM v_buku_lengkap WHERE judul LIKE ?");
+    $like_keyword = "%$keyword%";
+    $buku_stmt->bind_param("s", $like_keyword);
+    $buku_stmt->execute();
+    $buku_result = $buku_stmt->get_result();
+} else {
+    $buku_result = $conn->query("SELECT * FROM v_buku_lengkap ORDER BY judul ASC");
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -36,6 +61,10 @@ if(isset($_GET['status'])):
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <?php endif; ?>
+<form method="GET" action="buku.php" class="mb-3">
+    <input type="text" name="keyword" placeholder="Cari judul buku..." class="form-control" value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+    <button type="submit" class="btn btn-primary mt-2">Cari</button>
+</form>
 
 <div class="card shadow-sm">
     <div class="card-body">
@@ -226,3 +255,4 @@ if(isset($_GET['status'])):
 include 'includes/footer.php';
 $conn->close();
 ?>
+
